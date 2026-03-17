@@ -466,7 +466,50 @@
     return resolved;
   }
 
+  // Find var() directly used on a specific CSS property in matched rules
+  function findPropertyVar(el, cssProp) {
+    // cssProp can be a single prop or array of shorthand+longhand (e.g. ['gap','row-gap','column-gap'])
+    const props = Array.isArray(cssProp) ? cssProp : [cssProp];
+    for (const sheet of document.styleSheets) {
+      try {
+        for (const rule of sheet.cssRules) {
+          if (!rule.selectorText || !rule.style) continue;
+          try { if (!el.matches(rule.selectorText)) continue; } catch(e) { continue; }
+          for (const p of props) {
+            const val = rule.style.getPropertyValue(p);
+            if (val) {
+              const m = val.match(/var\((--[^,)]+)/);
+              if (m) return m[1];
+            }
+          }
+        }
+      } catch(e) {}
+    }
+    // Check inline style
+    const inline = el.getAttribute('style') || '';
+    for (const p of props) {
+      const re = new RegExp(p + '\\s*:\\s*[^;]*var\\((--[^,)]+)');
+      const m = inline.match(re);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
   function findToken(targetValue, el, prop) {
+    // First: check if the property directly uses a var() in CSS rules
+    if (prop) {
+      // Map JS camelCase to CSS kebab-case
+      const cssMap = {
+        fontSize: 'font-size', fontWeight: 'font-weight',
+        lineHeight: 'line-height', letterSpacing: 'letter-spacing',
+        borderRadius: 'border-radius', width: 'width'
+      };
+      const cssProp = cssMap[prop] || prop;
+      const directVar = findPropertyVar(el, cssProp);
+      if (directVar) return directVar;
+    }
+
+    // Fallback: scan all CSS vars for matching value
     const now = Date.now();
     if (!_cachedVars || now - _cacheTime > 3000) {
       _cachedVars = collectCSSVars();
@@ -685,28 +728,28 @@
 
       // Gap
       if (hasGap) {
-        const gapToken = findToken(gap, el);
+        const gapToken = findToken(gap, el, 'gap');
         html += `<div class="ei-row"><span class="ei-key">Gap</span><span class="ei-val --mono --copy" data-copy="${gapToken ? 'var(' + gapToken + ')' : gap}">${gap}${gapToken ? '<span class="ei-token">var(' + gapToken + ')</span>' : ''}</span></div>`;
         if (rowGap && rowGap !== 'normal' && rowGap !== gap) {
-          const rowGapToken = findToken(rowGap, el);
+          const rowGapToken = findToken(rowGap, el, 'row-gap');
           html += `<div class="ei-row"><span class="ei-key">Row Gap</span><span class="ei-val --mono --copy" data-copy="${rowGapToken ? 'var(' + rowGapToken + ')' : rowGap}">${rowGap}${rowGapToken ? '<span class="ei-token">var(' + rowGapToken + ')</span>' : ''}</span></div>`;
         }
         if (columnGap && columnGap !== 'normal' && columnGap !== gap) {
-          const colGapToken = findToken(columnGap, el);
+          const colGapToken = findToken(columnGap, el, 'column-gap');
           html += `<div class="ei-row"><span class="ei-key">Column Gap</span><span class="ei-val --mono --copy" data-copy="${colGapToken ? 'var(' + colGapToken + ')' : columnGap}">${columnGap}${colGapToken ? '<span class="ei-token">var(' + colGapToken + ')</span>' : ''}</span></div>`;
         }
       }
 
       // Margin
       if (hasMargin) {
-        const marginToken = findToken(cs.margin, el);
+        const marginToken = findToken(cs.margin, el, 'margin');
         if (marginToken) {
           html += `<div class="ei-row"><span class="ei-key">Margin</span><span class="ei-val --mono --copy" data-copy="var(${marginToken})">${cs.margin}<span class="ei-token">var(${marginToken})</span></span></div>`;
         } else {
-          const sides = [['Top', cs.marginTop, mt], ['Right', cs.marginRight, mr], ['Bottom', cs.marginBottom, mb], ['Left', cs.marginLeft, ml]];
-          for (const [dir, val, num] of sides) {
+          const sides = [['Top', cs.marginTop, mt, 'margin-top'], ['Right', cs.marginRight, mr, 'margin-right'], ['Bottom', cs.marginBottom, mb, 'margin-bottom'], ['Left', cs.marginLeft, ml, 'margin-left']];
+          for (const [dir, val, num, cssProp] of sides) {
             if (num !== 0) {
-              const tk = findToken(val, el);
+              const tk = findToken(val, el, cssProp);
               html += `<div class="ei-row"><span class="ei-key">Margin ${dir}</span><span class="ei-val --mono --copy" data-copy="${tk ? 'var(' + tk + ')' : val}">${val}${tk ? '<span class="ei-token">var(' + tk + ')</span>' : ''}</span></div>`;
             }
           }
@@ -715,14 +758,14 @@
 
       // Padding
       if (hasPadding) {
-        const paddingToken = findToken(cs.padding, el);
+        const paddingToken = findToken(cs.padding, el, 'padding');
         if (paddingToken) {
           html += `<div class="ei-row"><span class="ei-key">Padding</span><span class="ei-val --mono --copy" data-copy="var(${paddingToken})">${cs.padding}<span class="ei-token">var(${paddingToken})</span></span></div>`;
         } else {
-          const sides = [['Top', cs.paddingTop, pt], ['Right', cs.paddingRight, pr], ['Bottom', cs.paddingBottom, pb], ['Left', cs.paddingLeft, pl]];
-          for (const [dir, val, num] of sides) {
+          const sides = [['Top', cs.paddingTop, pt, 'padding-top'], ['Right', cs.paddingRight, pr, 'padding-right'], ['Bottom', cs.paddingBottom, pb, 'padding-bottom'], ['Left', cs.paddingLeft, pl, 'padding-left']];
+          for (const [dir, val, num, cssProp] of sides) {
             if (num !== 0) {
-              const tk = findToken(val, el);
+              const tk = findToken(val, el, cssProp);
               html += `<div class="ei-row"><span class="ei-key">Padding ${dir}</span><span class="ei-val --mono --copy" data-copy="${tk ? 'var(' + tk + ')' : val}">${val}${tk ? '<span class="ei-token">var(' + tk + ')</span>' : ''}</span></div>`;
             }
           }
@@ -739,13 +782,13 @@
     html += `<div class="ei-row"><span class="ei-key">Display</span><span class="ei-val --mono --copy" data-copy="${cs.display}">${cs.display}</span></div>`;
     html += `<div class="ei-row"><span class="ei-key">Position</span><span class="ei-val --mono --copy" data-copy="${cs.position}">${cs.position}</span></div>`;
     if (cs.borderTopStyle !== 'none' && cs.borderTopWidth !== '0px') {
-      const borderWidthToken = findToken(cs.borderTopWidth, el);
+      const borderWidthToken = findToken(cs.borderTopWidth, el, 'border-width');
       const borderColorToken = findColorToken(cs.borderTopColor, el);
       const borderTokenStr = [borderWidthToken, borderColorToken].filter(Boolean).map(t => 'var(' + t + ')').join(' ');
       html += `<div class="ei-row"><span class="ei-key">Border</span><span class="ei-val --mono --copy" data-copy="${borderTokenStr || border}">${border}${borderTokenStr ? '<span class="ei-token">' + borderTokenStr + '</span>' : ''}</span></div>`;
     }
     if (borderRadius && borderRadius !== '0px') {
-      const radiusToken = findToken(borderRadius, el);
+      const radiusToken = findToken(borderRadius, el, 'border-radius');
       html += `<div class="ei-row"><span class="ei-key">Border Radius</span><span class="ei-val --mono --copy" data-copy="${radiusToken ? 'var(' + radiusToken + ')' : borderRadius}">${borderRadius}${radiusToken ? '<span class="ei-token">var(' + radiusToken + ')</span>' : ''}</span></div>`;
     }
     if (cs.opacity !== '1') {
