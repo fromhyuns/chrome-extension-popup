@@ -110,7 +110,11 @@
       active = !active;
       host.style.display = active ? 'block' : 'none';
       if (!active) deactivate();
-      else { inspecting = true; fab.classList.add('--active'); }
+      else {
+        inspecting = true;
+        fab.style.display = '';
+        fab.classList.add('--active');
+      }
     }
   });
 
