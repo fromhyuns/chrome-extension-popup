@@ -66,6 +66,14 @@
   const toast = shadow.querySelector('.ei-toast');
   const toastMsg = shadow.querySelector('.ei-toast-msg');
   const closeBtn = shadow.querySelector('.ei-close-btn');
+  const viewportEl = shadow.querySelector('.ei-viewport-size');
+
+  // Viewport size display
+  function updateViewport() {
+    viewportEl.textContent = window.innerWidth + ' \u00d7 ' + window.innerHeight;
+  }
+  updateViewport();
+  window.addEventListener('resize', updateViewport);
 
   // Close button → full terminate + reset everything
   closeBtn.addEventListener('click', () => {
@@ -82,6 +90,9 @@
     fab.style.top = '16px';
     fab.style.right = '16px';
     fab.style.left = 'auto';
+    _fabDragged = false;
+    _fabAnchorRight = 16;
+    _fabAnchorTop = 16;
     host.style.display = 'none';
     // Reset panel content
     selTag.textContent = 'No selection';
@@ -135,44 +146,50 @@
      ======================================== */
   // ===== Panel positioning =====
   function positionPanel() {
-    const fabRect = fab.getBoundingClientRect();
-    const fabCx = fabRect.left + fabRect.width / 2;
-    const fabCy = fabRect.top + fabRect.height / 2;
     const pw = 312;
-    const ph = window.innerHeight * 0.8; // max-height: 80vh
+    const ph = window.innerHeight * 0.8;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const margin = 8;
 
-    // Horizontal: open toward the side with more space
-    let left;
+    // FAB position from anchors (right-based)
+    const fabRight = _fabAnchorRight;
+    const fabTop = Math.max(0, Math.min(vh - 48, _fabAnchorTop));
+    const fabLeft = vw - fabRight - 48;
+    const fabCx = fabLeft + 24;
+    const fabBottom = fabTop + 48;
+
+    // Horizontal: use right-based positioning
+    let right;
     if (fabCx > vw / 2) {
-      left = fabRect.right - pw;
+      // FAB on right half → panel right-aligned to FAB
+      right = fabRight;
       panel.style.transformOrigin = 'top right';
     } else {
-      left = fabRect.left;
+      // FAB on left half → panel left-aligned to FAB
+      right = vw - fabLeft - pw;
       panel.style.transformOrigin = 'top left';
     }
 
     // Vertical: open below or above FAB
     let top;
-    const spaceBelow = vh - fabRect.bottom - margin;
-    const spaceAbove = fabRect.top - margin;
+    const spaceBelow = vh - fabBottom - margin;
+    const spaceAbove = fabTop - margin;
 
     if (spaceBelow >= ph || spaceBelow >= spaceAbove) {
-      top = fabRect.bottom + margin;
+      top = fabBottom + margin;
     } else {
-      top = fabRect.top - ph - margin;
+      top = fabTop - ph - margin;
       panel.style.transformOrigin = panel.style.transformOrigin.replace('top', 'bottom');
     }
 
     // Clamp to viewport
-    left = Math.max(margin, Math.min(left, vw - pw - margin));
+    right = Math.max(margin, Math.min(right, vw - pw - margin));
     top = Math.max(margin, Math.min(top, vh - ph - margin));
 
-    panel.style.left = left + 'px';
+    panel.style.left = 'auto';
+    panel.style.right = right + 'px';
     panel.style.top = top + 'px';
-    panel.style.right = 'auto';
   }
 
   function openPanel() {
@@ -187,6 +204,7 @@
 
   // ===== FAB drag + click =====
   let _dragState = null;
+  let _fabDragged = false; // true if user manually repositioned FAB
 
   fab.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
@@ -216,6 +234,12 @@
     if (!_dragState) return;
     const wasDrag = _dragState.moved;
     _dragState = null;
+    if (wasDrag) {
+      _fabDragged = true;
+      const rect = fab.getBoundingClientRect();
+      _fabAnchorRight = window.innerWidth - rect.right;
+      _fabAnchorTop = rect.top;
+    }
     if (!wasDrag && !panelOpen) {
       openPanel();
     }
@@ -304,13 +328,27 @@
     }
   }, true);
 
-  // Keep overlays in sync
+  // Keep overlays in sync + clamp FAB to viewport
   function refresh() {
     if (hoveredEl) positionOverlay(hoverOv, hoveredEl);
     if (selectedEl) positionOverlay(selectOv, selectedEl);
   }
+  let _fabAnchorRight = 16; // distance from right edge
+  let _fabAnchorTop = 16;
+
+  function clampFab() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // Always position relative to right edge
+    const left = Math.max(0, Math.min(vw - 48, vw - _fabAnchorRight - 48));
+    const top = Math.max(0, Math.min(vh - 48, _fabAnchorTop));
+    fab.style.left = left + 'px';
+    fab.style.top = top + 'px';
+    fab.style.right = 'auto';
+    if (panelOpen) positionPanel();
+  }
   window.addEventListener('scroll', refresh, true);
-  window.addEventListener('resize', refresh);
+  window.addEventListener('resize', () => { refresh(); clampFab(); });
 
   // ESC → pause
   document.addEventListener('keydown', (e) => {
@@ -446,11 +484,29 @@
     const tag = el.tagName && el.tagName.toLowerCase();
     if (tag === 'svg' || svgTags.includes(tag)) {
       let cur = el;
-      // Walk up through SVG internals to reach <svg>
       while (cur && cur.tagName && cur.tagName.toLowerCase() !== 'svg') cur = cur.parentElement;
-      if (cur) scanEl(cur); // scan <svg> itself
-      // Scan the parent wrapper of <svg> (often the icon component container)
+      if (cur) scanEl(cur);
       if (cur && cur.parentElement) scanEl(cur.parentElement);
+    }
+
+    // Walk up from the clicked element to find nearest ancestor with an ID → extract icon name
+    let ancestor = el;
+    while (ancestor && ancestor !== document.documentElement && ancestor !== document.body) {
+      if (ancestor.id) {
+        const parts = ancestor.id
+          .replace(/([a-z])([A-Z])/g, '$1-$2')
+          .split(/[-_/]+/)
+          .filter(Boolean);
+        const iconName = parts[parts.length - 1].toLowerCase();
+        if (iconName && !tokens.includes(iconName)) {
+          tokens.unshift(iconName);
+        }
+        if (!tokens.includes(ancestor.id)) {
+          tokens.push(ancestor.id);
+        }
+        break;
+      }
+      ancestor = ancestor.parentElement;
     }
 
     return tokens;
@@ -466,70 +522,143 @@
     return resolved;
   }
 
-  // Find var() directly used on a specific CSS property in matched rules
-  function findPropertyVar(el, cssProp) {
-    // cssProp can be a single prop or array of shorthand+longhand (e.g. ['gap','row-gap','column-gap'])
-    const props = Array.isArray(cssProp) ? cssProp : [cssProp];
-    for (const sheet of document.styleSheets) {
-      try {
-        for (const rule of sheet.cssRules) {
-          if (!rule.selectorText || !rule.style) continue;
-          try { if (!el.matches(rule.selectorText)) continue; } catch(e) { continue; }
-          for (const p of props) {
-            const val = rule.style.getPropertyValue(p);
-            if (val) {
-              const m = val.match(/var\((--[^,)]+)/);
-              if (m) return m[1];
-            }
-          }
-        }
-      } catch(e) {}
-    }
-    // Check inline style
-    const inline = el.getAttribute('style') || '';
+  // Longhand → shorthand mapping for broader var() search
+  const _shorthandMap = {
+    'margin-top': ['margin'], 'margin-right': ['margin'], 'margin-bottom': ['margin'], 'margin-left': ['margin'],
+    'padding-top': ['padding'], 'padding-right': ['padding'], 'padding-bottom': ['padding'], 'padding-left': ['padding'],
+    'border-top-width': ['border-width', 'border', 'border-top'],
+    'border-right-width': ['border-width', 'border', 'border-right'],
+    'border-bottom-width': ['border-width', 'border', 'border-bottom'],
+    'border-left-width': ['border-width', 'border', 'border-left'],
+    'border-width': ['border'],
+    'border-top-color': ['border-color', 'border', 'border-top'],
+    'border-radius': ['border-radius'],
+    'font-size': ['font'], 'font-weight': ['font'],
+    'line-height': ['font'],
+    'row-gap': ['gap'], 'column-gap': ['gap'],
+    'background-image': ['background'],
+    'background-color': ['background'],
+  };
+
+  // Scan a single rule's style for var() on given props
+  function _scanRuleForVar(ruleStyle, props) {
     for (const p of props) {
-      const re = new RegExp(p + '\\s*:\\s*[^;]*var\\((--[^,)]+)');
-      const m = inline.match(re);
-      if (m) return m[1];
+      const val = ruleStyle.getPropertyValue(p);
+      if (val) {
+        const m = val.match(/var\((--[^,)]+)/);
+        if (m) return m[1];
+      }
     }
     return null;
   }
 
+  // Recursively scan rules (handles @media, @supports, @layer etc.)
+  function _scanRules(rules, el, props) {
+    for (const rule of rules) {
+      if (rule.selectorText && rule.style) {
+        try { if (!el.matches(rule.selectorText)) continue; } catch(e) { continue; }
+        const found = _scanRuleForVar(rule.style, props);
+        if (found) return found;
+      }
+      // Nested rules (@media, @supports, @layer)
+      if (rule.cssRules) {
+        const found = _scanRules(rule.cssRules, el, props);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  // Find var() directly used on a specific CSS property in matched rules
+  function findPropertyVar(el, cssProp) {
+    const base = Array.isArray(cssProp) ? cssProp : [cssProp];
+    // Build full list: the property itself + its shorthand parents
+    const props = [...base];
+    for (const p of base) {
+      const shorthands = _shorthandMap[p];
+      if (shorthands) {
+        for (const s of shorthands) {
+          if (!props.includes(s)) props.push(s);
+        }
+      }
+    }
+
+    // Check inline style first (highest specificity)
+    const inline = el.getAttribute('style') || '';
+    if (inline) {
+      for (const p of props) {
+        const re = new RegExp(p + '\\s*:\\s*[^;]*var\\((--[^,)]+)');
+        const m = inline.match(re);
+        if (m) return m[1];
+      }
+    }
+
+    // Check stylesheets (including nested @media etc.)
+    for (const sheet of document.styleSheets) {
+      try {
+        const found = _scanRules(sheet.cssRules, el, props);
+        if (found) return found;
+      } catch(e) {} // skip cross-origin
+    }
+
+    return null;
+  }
+
+  // CSS camelCase → kebab-case map
+  const _cssMap = {
+    fontSize: 'font-size', fontWeight: 'font-weight',
+    lineHeight: 'line-height', letterSpacing: 'letter-spacing',
+    borderRadius: 'border-radius', borderWidth: 'border-width',
+    marginTop: 'margin-top', marginRight: 'margin-right',
+    marginBottom: 'margin-bottom', marginLeft: 'margin-left',
+    paddingTop: 'padding-top', paddingRight: 'padding-right',
+    paddingBottom: 'padding-bottom', paddingLeft: 'padding-left',
+    backgroundImage: 'background-image', backgroundColor: 'background-color',
+    rowGap: 'row-gap', columnGap: 'column-gap',
+  };
+
   function findToken(targetValue, el, prop) {
-    // First: check if the property directly uses a var() in CSS rules
+    if (!targetValue || targetValue === 'normal' || targetValue === 'none') return null;
+
+    // Step 1: Direct var() in CSS rules (most accurate)
     if (prop) {
-      // Map JS camelCase to CSS kebab-case
-      const cssMap = {
-        fontSize: 'font-size', fontWeight: 'font-weight',
-        lineHeight: 'line-height', letterSpacing: 'letter-spacing',
-        borderRadius: 'border-radius', width: 'width'
-      };
-      const cssProp = cssMap[prop] || prop;
+      const cssProp = _cssMap[prop] || prop;
       const directVar = findPropertyVar(el, cssProp);
       if (directVar) return directVar;
     }
 
-    // Fallback: scan all CSS vars for matching value
+    // Step 2: Scan all CSS custom properties for value match
     const now = Date.now();
     if (!_cachedVars || now - _cacheTime > 3000) {
       _cachedVars = collectCSSVars();
       _cacheTime = now;
     }
-    const resolveProp = prop || 'width';
     const cs = getComputedStyle(el);
+
+    // Normalize target for comparison
+    const targetNum = parseFloat(targetValue);
+    const targetUnit = targetValue.replace(/^[\d.]+/, '');
+
     for (const name of _cachedVars) {
       const val = cs.getPropertyValue(name).trim();
       if (!val) continue;
-      // Direct match
+
+      // Direct string match
       if (val === targetValue) return name;
-      // Resolve units (rem, em, etc.) to px for comparison
-      if (targetValue.endsWith('px') && val.match(/^[\d.]+(rem|em|vh|vw|%|ex|ch|vmin|vmax)$/)) {
+
+      // Numeric match (e.g. "700" === "700")
+      if (!isNaN(targetNum) && !isNaN(parseFloat(val)) && parseFloat(val) === targetNum && val.replace(/^[\d.]+/, '') === targetUnit) return name;
+
+      // Unit conversion: resolve any unit to px for comparison
+      if (targetValue.endsWith('px') && /^[\d.]+(rem|em|ex|ch|vh|vw|vmin|vmax|%)$/.test(val)) {
         try {
+          const resolveProp = (prop && _cssMap[prop]) || prop || 'width';
           const resolved = resolveToPixel(val, resolveProp);
           if (resolved === targetValue) return name;
         } catch(e) {}
       }
     }
+
     return null;
   }
 
@@ -668,18 +797,52 @@
     const copySvg = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
     const textToken = findColorToken(cs.color, el);
     const bgToken = (bg !== 'transparent') ? findColorToken(cs.backgroundColor, el) : null;
+    const bgImage = cs.backgroundImage;
+    const hasGradient = bgImage && bgImage !== 'none' && /gradient/i.test(bgImage);
 
     html += `<div class="ei-section"><div class="ei-section-head">Colors</div>`;
     html += `<div class="ei-color-row --copy" data-copy="${textToken || color}"><div class="ei-clr-dot" style="background:${color}"></div><div class="ei-clr-info"><span class="ei-clr-label">Text Color</span><span class="ei-clr-hex">${color}</span>${textToken ? '<span class="ei-clr-token">var(' + textToken + ')</span>' : ''}</div><span class="ei-clr-copy">${copySvg}</span></div>`;
-    if (bg !== 'transparent') {
-      html += `<div class="ei-color-row --copy" data-copy="${bgToken ? 'var(' + bgToken + ')' : bg}"><div class="ei-clr-dot" style="background:${bg}"></div><div class="ei-clr-info"><span class="ei-clr-label">Background</span><span class="ei-clr-hex">${bg}</span>${bgToken ? '<span class="ei-clr-token">var(' + bgToken + ')</span>' : ''}</div><span class="ei-clr-copy">${copySvg}</span></div>`;
-    } else {
-      // transparent — find effective bg from parent and look up its token
-      const effBgRgb = getEffectiveBg(el);
-      const effBgHex = rgbToHex('rgb(' + effBgRgb.join(',') + ')');
-      const effBgEl = (function findBgEl(e) { while (e && e !== document.documentElement) { const b = getComputedStyle(e).backgroundColor; const p = parseRgb(b); if (p && !(p[0]===0&&p[1]===0&&p[2]===0&&b.includes('0)'))) return e; e = e.parentElement; } return document.documentElement; })(el.parentElement);
-      const effBgToken = findColorToken(getComputedStyle(effBgEl).backgroundColor, effBgEl);
-      html += `<div class="ei-color-row --copy" data-copy="${effBgToken ? 'var(' + effBgToken + ')' : effBgHex}"><div class="ei-clr-dot" style="background:${effBgHex}"></div><div class="ei-clr-info"><span class="ei-clr-label">Background <span style="font-size:9px;color:#aaa">(inherited)</span></span><span class="ei-clr-hex">${effBgHex}</span>${effBgToken ? '<span class="ei-clr-token">var(' + effBgToken + ')</span>' : ''}</div><span class="ei-clr-copy">${copySvg}</span></div>`;
+
+    // Gradient
+    if (hasGradient) {
+      const gradToken = findPropertyVar(el, ['background-image', 'background']);
+      // Extract color stops from gradient
+      const stopColors = [];
+      const colorMatches = bgImage.matchAll(/rgba?\([^)]+\)|#[0-9a-fA-F]{3,8}|[a-z]{3,}(?=\s|,|\))/gi);
+      for (const cm of colorMatches) {
+        const hex = rgbToHex(resolveColor(cm[0]));
+        if (hex && hex !== 'transparent' && !stopColors.includes(hex)) stopColors.push(hex);
+      }
+      html += `<div class="ei-gradient-row --copy" data-copy="${gradToken ? 'var(' + gradToken + ')' : bgImage}">
+        <div class="ei-grad-preview" style="background:${bgImage};"></div>
+        <div class="ei-clr-info">
+          <span class="ei-clr-label">Gradient</span>
+          <div class="ei-grad-stops">${stopColors.map(c => '<span class="ei-grad-stop"><span class="ei-grad-dot" style="background:' + c + '"></span>' + c + '</span>').join('')}</div>
+          ${gradToken ? '<span class="ei-clr-token">var(' + gradToken + ')</span>' : ''}
+        </div>
+        <span class="ei-clr-copy">${copySvg}</span>
+      </div>`;
+      // Token for each gradient color stop
+      for (const sc of stopColors) {
+        const resolved = resolveColor(sc);
+        const stopToken = findColorToken(resolved, el);
+        if (stopToken) {
+          html += `<div class="ei-color-row --copy" data-copy="var(${stopToken})"><div class="ei-clr-dot" style="background:${sc}"></div><div class="ei-clr-info"><span class="ei-clr-label">Stop Color</span><span class="ei-clr-hex">${sc}</span><span class="ei-clr-token">var(${stopToken})</span></div><span class="ei-clr-copy">${copySvg}</span></div>`;
+        }
+      }
+    }
+
+    if (!hasGradient) {
+      if (bg !== 'transparent') {
+        html += `<div class="ei-color-row --copy" data-copy="${bgToken ? 'var(' + bgToken + ')' : bg}"><div class="ei-clr-dot" style="background:${bg}"></div><div class="ei-clr-info"><span class="ei-clr-label">Background</span><span class="ei-clr-hex">${bg}</span>${bgToken ? '<span class="ei-clr-token">var(' + bgToken + ')</span>' : ''}</div><span class="ei-clr-copy">${copySvg}</span></div>`;
+      } else {
+        // transparent — find effective bg from parent and look up its token
+        const effBgRgb = getEffectiveBg(el);
+        const effBgHex = rgbToHex('rgb(' + effBgRgb.join(',') + ')');
+        const effBgEl = (function findBgEl(e) { while (e && e !== document.documentElement) { const b = getComputedStyle(e).backgroundColor; const p = parseRgb(b); if (p && !(p[0]===0&&p[1]===0&&p[2]===0&&b.includes('0)'))) return e; e = e.parentElement; } return document.documentElement; })(el.parentElement);
+        const effBgToken = findColorToken(getComputedStyle(effBgEl).backgroundColor, effBgEl);
+        html += `<div class="ei-color-row --copy" data-copy="${effBgToken ? 'var(' + effBgToken + ')' : effBgHex}"><div class="ei-clr-dot" style="background:${effBgHex}"></div><div class="ei-clr-info"><span class="ei-clr-label">Background <span style="font-size:9px;color:#aaa">(inherited)</span></span><span class="ei-clr-hex">${effBgHex}</span>${effBgToken ? '<span class="ei-clr-token">var(' + effBgToken + ')</span>' : ''}</div><span class="ei-clr-copy">${copySvg}</span></div>`;
+      }
     }
     // Contrast ratio
     const fgRgb = parseRgb(cs.color);
@@ -856,9 +1019,13 @@
       <div class="ei-panel-scroll"></div>
       <div class="ei-panel-foot">
         <div class="ei-foot-shortcuts">
-          <span class="ei-shortcut"><kbd>Click</kbd> Inspect</span>
-          <span class="ei-shortcut"><kbd>ESC</kbd> Pause</span>
-          <span class="ei-shortcut"><kbd>₩</kbd> Resume</span>
+          <span class="ei-shortcut" title="Click to inspect"><kbd>Click</kbd> Inspect</span>
+          <span class="ei-shortcut" title="Pause inspection"><kbd>ESC</kbd> Pause</span>
+          <span class="ei-shortcut" title="Resume inspection"><kbd>₩</kbd> Resume</span>
+        </div>
+        <div class="ei-viewport">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+          <span class="ei-viewport-size"></span>
         </div>
       </div>
     </div>
@@ -1039,6 +1206,24 @@
     .ei-clr-copy { opacity: 0; transition: opacity 0.12s; color: #c7c7cc; }
     .ei-color-row:hover .ei-clr-copy { opacity: 1; }
 
+    /* Gradient */
+    .ei-gradient-row {
+      display: flex; align-items: center; gap: 9px; padding: 6px 0; border-radius: 5px; transition: background 0.1s;
+    }
+    .ei-gradient-row.--copy:hover { background: rgba(0,0,0,0.015); margin: 0 -5px; padding: 6px 5px; cursor: pointer; }
+    .ei-gradient-row:hover .ei-clr-copy { opacity: 1; }
+    .ei-gradient-row + .ei-color-row { border-top: 0.5px solid rgba(0,0,0,0.03); }
+    .ei-grad-preview {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 0 0 0.5px rgba(0,0,0,0.08);
+    }
+    .ei-grad-stops { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .ei-grad-stop {
+      display: inline-flex; align-items: center; gap: 3px;
+      font: 500 10px/1 'Fira Code',monospace; color: #1d1d1f;
+    }
+    .ei-grad-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.1); }
+
     /* Contrast */
     .ei-contrast {
       display: flex; align-items: center; gap: 10px;
@@ -1086,15 +1271,21 @@
     /* Footer */
     .ei-panel-foot {
       padding: 9px 16px; border-top: 0.5px solid rgba(0,0,0,0.05);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
     }
-    .ei-foot-shortcuts { display: flex; gap: 10px; }
-    .ei-shortcut { font-size: 10px; color: #86868b; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+    .ei-foot-shortcuts { display: flex; gap: 8px; }
+    .ei-shortcut { font-size: 9px; color: #86868b; font-weight: 500; display: flex; align-items: center; gap: 3px; }
     .ei-shortcut kbd {
-      font-family: 'Inter',system-ui,sans-serif; font-size: 9.5px; font-weight: 600; color: #1d1d1f;
-      background: rgba(0,0,0,0.05); border: 0.5px solid rgba(0,0,0,0.1);
-      padding: 2px 5px; border-radius: 3px; line-height: 1;
+      font-family: 'Inter',system-ui,sans-serif; font-size: 8.5px; font-weight: 600; color: #1d1d1f;
+      background: rgba(0,0,0,0.05); border: 0.5px solid rgba(0,0,0,0.08);
+      padding: 1.5px 4px; border-radius: 3px; line-height: 1;
     }
+    .ei-viewport {
+      display: flex; align-items: center; gap: 4px;
+      font: 600 10px/1 'Fira Code',monospace; color: #0FA09B;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .ei-viewport svg { color: #0FA09B; opacity: 0.7; }
     .ei-close-btn {
       width: 24px; height: 24px; border-radius: 50%;
       background: rgba(0,0,0,0.05); border: none; cursor: pointer;
