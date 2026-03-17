@@ -71,7 +71,7 @@
     font-size: 18px; font-weight: 700; color: #1d1d1f;
     letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;
   }
-  .page-logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 7px; }
+  .page-logo-icon { width: 28px; height: 28px; background: #1a1a1a; border-radius: 0; }
   .page-nav-links { display: flex; gap: 28px; }
   .page-nav-links a { font-size: 14px; color: #86868b; text-decoration: none; font-weight: 500; }
 
@@ -84,45 +84,48 @@
   .page-hero .subtitle { font-size: 18px; line-height: 1.65; color: #6e6e73; max-width: 520px; }
 
   .page-tags { display: flex; gap: 8px; margin-top: 28px; }
-  .page-tag { padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; }
-  .tag-blue { background: #eef2ff; color: #4f46e5; }
-  .tag-orange { background: #fff7ed; color: #ea580c; }
-  .tag-teal { background: #f0fdfa; color: #0d9488; }
+  .page-tag { padding: 7px 16px; border-radius: 0; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; text-transform: uppercase; letter-spacing: 0.8px; }
+  .tag-blue { background: #f5f0eb; color: #1a1a1a; border-left: 3px solid #0FA09B; }
+  .tag-orange { background: #f5f0eb; color: #1a1a1a; border-left: 3px solid #1a1a1a; }
+  .tag-teal { background: #f5f0eb; color: #1a1a1a; border-left: 3px solid #78716c; }
 
-  .page-card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 36px; }
-  .page-card { background: #f9fafb; border: 1px solid #f0f0f2; border-radius: 14px; padding: 24px; }
+  .page-card-row { display: grid; grid-template-columns: 5fr 3fr; gap: 0; margin-top: 36px; }
+  .page-card { background: transparent; border: none; border-left: 3px solid #1a1a1a; padding: 28px 24px; }
+  .page-card + .page-card { border-left-color: #0FA09B; }
   .page-card h3 { font-size: 15px; font-weight: 650; color: #1d1d1f; margin-bottom: 8px; }
   .page-card p { font-size: 14px; line-height: 1.6; color: #86868b; }
   .page-btn {
     display: inline-flex; align-items: center; gap: 6px;
     margin-top: 14px; padding: 8px 18px;
-    background: #6366f1; color: #fff; border-radius: 9px;
-    font-size: 13px; font-weight: 600; border: none;
+    background: #1a1a1a; color: #fff; border-radius: 0;
+    font-size: 12px; font-weight: 600; border: none;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
   .page-btn-outline {
     display: inline-flex; align-items: center; gap: 6px;
     margin-top: 14px; padding: 8px 18px;
-    background: #fff; color: #6366f1; border-radius: 9px;
-    font-size: 13px; font-weight: 600; border: 1.5px solid #6366f1;
+    background: #fff; color: #1a1a1a; border-radius: 0;
+    font-size: 12px; font-weight: 600; border: 1.5px solid #1a1a1a;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
 
   /* ===== INSPECTABLE ===== */
   .inspectable { position: relative; transition: outline 0.08s, background 0.08s; }
 
   .inspectable.hovered {
-    outline: 2px solid rgba(99,102,241,0.45);
+    outline: 2px solid rgba(15,160,155,0.45);
     outline-offset: 3px;
-    background: rgba(99,102,241,0.025);
+    background: rgba(15,160,155,0.025);
   }
   .inspectable.selected {
-    outline: 2.5px solid #6366f1;
+    outline: 2.5px solid #0FA09B;
     outline-offset: 3px;
-    background: rgba(99,102,241,0.035);
+    background: rgba(15,160,155,0.035);
   }
 
   .hover-label {
     position: absolute; top: -26px; left: 0;
-    background: #6366f1; color: #fff;
+    background: #0FA09B; color: #fff;
     font-size: 10.5px; font-weight: 600;
     padding: 2px 7px; border-radius: 4px;
     white-space: nowrap; pointer-events: none;
@@ -135,7 +138,7 @@
   .dim-badge {
     position: absolute; bottom: -22px; left: 50%;
     transform: translateX(-50%);
-    background: rgba(99,102,241,0.88); color: #fff;
+    background: rgba(15,160,155,0.88); color: #fff;
     font-size: 9.5px; font-weight: 600;
     padding: 2px 7px; border-radius: 3px;
     white-space: nowrap; pointer-events: none;
@@ -150,7 +153,7 @@
      ========================================= */
   .float-widget {
     position: absolute;
-    top: 20px; right: 24px;
+    top: 60px; right: 24px;
     z-index: 200;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -159,10 +162,10 @@
   .fab {
     width: 48px; height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #0FA09B 0%, #0B7E7A 100%);
     box-shadow:
-      0 4px 14px rgba(99,102,241,0.35),
-      0 12px 32px rgba(99,102,241,0.18);
+      0 4px 14px rgba(15,160,155,0.35),
+      0 12px 32px rgba(15,160,155,0.18);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -173,8 +176,8 @@
   .fab:hover {
     transform: scale(1.08);
     box-shadow:
-      0 6px 20px rgba(99,102,241,0.4),
-      0 16px 40px rgba(99,102,241,0.2);
+      0 6px 20px rgba(15,160,155,0.4),
+      0 16px 40px rgba(15,160,155,0.2);
   }
 
   .fab:active { transform: scale(0.95); }
@@ -187,7 +190,7 @@
     position: absolute;
     inset: -4px;
     border-radius: 50%;
-    border: 2px solid rgba(99,102,241,0.3);
+    border: 2px solid rgba(15,160,155,0.3);
     animation: ringPulse 2s ease-out infinite;
   }
 
@@ -226,7 +229,7 @@
     background: rgba(255,255,255,0.97);
     backdrop-filter: blur(40px) saturate(200%);
     -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border-radius: 16px;
+    border-radius: 3px;
     box-shadow:
       0 0 0 0.5px rgba(0,0,0,0.06),
       0 8px 24px rgba(0,0,0,0.08),
@@ -267,10 +270,10 @@
 
   .panel-logo {
     width: 26px; height: 26px;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+    background: linear-gradient(135deg, #0FA09B 0%, #0B7E7A 50%, #3DC4BF 100%);
     border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 6px rgba(99,102,241,0.25);
+    box-shadow: 0 2px 6px rgba(15,160,155,0.25);
   }
   .panel-logo svg { width: 14px; height: 14px; color: #fff; }
 
@@ -289,24 +292,24 @@
   /* Selected element bar */
   .sel-bar {
     display: flex; align-items: center; gap: 8px;
-    background: rgba(99,102,241,0.06);
-    border: 1px solid rgba(99,102,241,0.1);
+    background: rgba(15,160,155,0.06);
+    border: 1px solid rgba(15,160,155,0.1);
     border-radius: 7px; padding: 7px 10px;
   }
 
   .sel-dot {
     width: 7px; height: 7px; border-radius: 50%;
-    background: #6366f1; flex-shrink: 0;
+    background: #0FA09B; flex-shrink: 0;
     animation: dotPulse 2s infinite;
   }
   @keyframes dotPulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
-    50% { box-shadow: 0 0 0 4px rgba(99,102,241,0); }
+    0%,100% { box-shadow: 0 0 0 0 rgba(15,160,155,0.4); }
+    50% { box-shadow: 0 0 0 4px rgba(15,160,155,0); }
   }
 
   .sel-tag {
     font-family: 'Fira Code', monospace;
-    font-size: 11px; font-weight: 500; color: #6366f1;
+    font-size: 11px; font-weight: 500; color: #0FA09B;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .sel-dim {
@@ -328,11 +331,11 @@
   }
   .empty-ico {
     width: 44px; height: 44px;
-    background: rgba(99,102,241,0.07); border-radius: 12px;
+    background: rgba(15,160,155,0.07); border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 12px;
   }
-  .empty-ico svg { width: 20px; height: 20px; color: #6366f1; opacity: 0.5; }
+  .empty-ico svg { width: 20px; height: 20px; color: #0FA09B; opacity: 0.5; }
   .empty-title { font-size: 13.5px; font-weight: 600; color: #1d1d1f; margin-bottom: 4px; }
   .empty-desc { font-size: 12px; color: #86868b; line-height: 1.5; }
 
@@ -358,7 +361,7 @@
     letter-spacing: 0.02px;
     margin-bottom: 10px;
     padding-bottom: 7px;
-    border-bottom: 1.5px solid rgba(99,102,241,0.15);
+    border-bottom: 1.5px solid rgba(15,160,155,0.15);
   }
 
   .prop-row {
@@ -371,7 +374,7 @@
   .prop-val.mono { font-family: 'Fira Code', monospace; font-size: 11px; font-weight: 500; }
 
   .copyable { cursor: pointer; padding: 2px 5px; border-radius: 4px; transition: all 0.12s; }
-  .copyable:hover { background: rgba(99,102,241,0.08); color: #6366f1; }
+  .copyable:hover { background: rgba(15,160,155,0.08); color: #0FA09B; }
 
   .font-preview-box {
     background: rgba(0,0,0,0.018);
@@ -414,8 +417,8 @@
   .box-layer { position: relative; display: flex; align-items: center; justify-content: center; }
   .box-margin { background: rgba(249,168,37,0.06); border: 1.5px dashed rgba(249,168,37,0.3); border-radius: 8px; padding: 14px; }
   .box-padding { background: rgba(76,175,80,0.06); border: 1.5px dashed rgba(76,175,80,0.3); border-radius: 6px; padding: 12px; }
-  .box-content { background: rgba(99,102,241,0.06); border: 1.5px solid rgba(99,102,241,0.2); border-radius: 4px; padding: 6px 14px; text-align: center; }
-  .box-sz { font-family: 'Fira Code', monospace; font-size: 10.5px; font-weight: 600; color: #6366f1; }
+  .box-content { background: rgba(15,160,155,0.06); border: 1.5px solid rgba(15,160,155,0.2); border-radius: 4px; padding: 6px 14px; text-align: center; }
+  .box-sz { font-family: 'Fira Code', monospace; font-size: 10.5px; font-weight: 600; color: #0FA09B; }
   .bv { font-family: 'Fira Code', monospace; font-size: 9px; font-weight: 500; position: absolute; color: #86868b; }
   .bv.t { top: 1px; left: 50%; transform: translateX(-50%); }
   .bv.b { bottom: 1px; left: 50%; transform: translateX(-50%); }
@@ -425,7 +428,7 @@
   .box-legend { display: flex; gap: 12px; margin-top: 8px; justify-content: center; }
   .box-legend span { display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: #86868b; font-weight: 500; }
   .box-legend i { width: 7px; height: 7px; border-radius: 2px; display: inline-block; font-style: normal; }
-  .lg-m { background: rgba(249,168,37,0.35); } .lg-p { background: rgba(76,175,80,0.35); } .lg-c { background: rgba(99,102,241,0.35); }
+  .lg-m { background: rgba(249,168,37,0.35); } .lg-p { background: rgba(76,175,80,0.35); } .lg-c { background: rgba(15,160,155,0.35); }
 
   /* Panel footer */
   .panel-foot {
@@ -435,7 +438,7 @@
     flex-shrink: 0;
   }
   .foot-btn {
-    font-size: 11px; font-weight: 600; color: #6366f1;
+    font-size: 11px; font-weight: 600; color: #0FA09B;
     border: none; background: none; cursor: pointer;
     padding: 3px 0; transition: opacity 0.12s;
     display: flex; align-items: center; gap: 4px;
@@ -456,7 +459,56 @@
     display: flex; align-items: center; gap: 7px;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast svg { width: 13px; height: 13px; color: #a78bfa; }
+  .toast svg { width: 13px; height: 13px; color: #3DC4BF; }
+
+  /* Inspect overlays */
+  .inspect-hover-overlay, .inspect-select-overlay {
+    position: fixed; pointer-events: none; z-index: 100;
+    display: none; box-sizing: border-box;
+  }
+  .inspect-hover-overlay {
+    border: 2px solid rgba(15,160,155,0.5);
+    background: rgba(15,160,155,0.04);
+  }
+  .inspect-select-overlay {
+    border: 2.5px solid #0FA09B;
+    background: rgba(15,160,155,0.06);
+  }
+  .overlay-tag {
+    position: absolute; top: -24px; left: -2px;
+    background: #0FA09B; color: #fff;
+    font-family: 'Fira Code', monospace;
+    font-size: 10.5px; font-weight: 600;
+    padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+  }
+  .overlay-dim {
+    position: absolute; bottom: -22px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15,160,155,0.88); color: #fff;
+    font-family: 'Fira Code', monospace;
+    font-size: 9.5px; font-weight: 600;
+    padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+  }
+
+  .url-bar { outline: none; }
+  .url-bar:focus { border-color: #0FA09B; box-shadow: 0 0 0 2px rgba(15,160,155,0.15); }
+
+  .site-frame {
+    width: 100%; height: 700px; border: none;
+    display: none;
+  }
+
+  .site-error {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 400px; color: #86868b; text-align: center; padding: 40px;
+  }
+  .site-error h2 { font-size: 18px; color: #1d1d1f; margin-bottom: 8px; }
+  .site-error p { font-size: 14px; line-height: 1.6; }
+  .site-error button {
+    margin-top: 16px; padding: 8px 18px; background: #1a1a1a; color: #fff;
+    border: none; border-radius: 0; font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -464,7 +516,7 @@
 <div class="browser">
   <div class="toolbar">
     <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
-    <div class="url-bar">acme.design/brand-guidelines</div>
+    <input class="url-bar" id="urlBar" type="text" value="acme.design/brand-guidelines" placeholder="Enter URL and press Enter" spellcheck="false">
     <div class="ext-icons">
       <button class="ext-btn"><svg fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
       <button class="ext-btn"><svg fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7V4h3"/><path d="M20 7V4h-3"/><path d="M4 17v3h3"/><path d="M20 17v3h-3"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -472,6 +524,7 @@
     </div>
   </div>
 
+    <iframe id="siteFrame" class="site-frame" style="display:none;"></iframe>
   <div class="page-body inspect-on" id="pageBody">
 
     <!-- Page Elements -->
@@ -491,7 +544,7 @@
         Our design system provides the foundation for consistent, accessible, and delightful user interfaces.
       </p>
       <div class="page-tags">
-        <span class="page-tag tag-blue inspectable" data-tag="span.tag-blue" data-bw="128 x 33" data-font="Inter" data-size="13px" data-weight="500" data-weight-name="Medium" data-lh="1.4 (18px)" data-ls="0px" data-color="#4F46E5" data-bg="#EEF2FF" data-m="0" data-p="7px 16px" data-border="none" data-radius="20px" data-display="inline-flex" data-position="static">
+        <span class="page-tag tag-blue inspectable" data-tag="span.tag-blue" data-bw="128 x 33" data-font="Inter" data-size="13px" data-weight="500" data-weight-name="Medium" data-lh="1.4 (18px)" data-ls="0px" data-color="#1A1A1A" data-bg="#F5F0EB" data-m="0" data-p="7px 16px" data-border="none" data-radius="20px" data-display="inline-flex" data-position="static">
           <span class="hover-label">&lt;span.tag-blue&gt;</span><span class="dim-badge">128 x 33</span>Design Tokens
         </span>
         <span class="page-tag tag-orange inspectable" data-tag="span.tag-orange" data-bw="102 x 33" data-font="Inter" data-size="13px" data-weight="500" data-weight-name="Medium" data-lh="1.4 (18px)" data-ls="0px" data-color="#EA580C" data-bg="#FFF7ED" data-m="0" data-p="7px 16px" data-border="none" data-radius="20px" data-display="inline-flex" data-position="static">
@@ -508,7 +561,7 @@
         <span class="hover-label">&lt;div.card&gt;</span><span class="dim-badge">340 x 188</span>
         <h3>Typography Scale</h3>
         <p>A modular scale that ensures consistent text hierarchy across all components and layouts.</p>
-        <button class="page-btn inspectable" data-tag="button.primary" data-bw="142 x 37" data-font="Inter" data-size="13px" data-weight="600" data-weight-name="SemiBold" data-lh="1 (13px)" data-ls="0px" data-color="#FFFFFF" data-bg="#6366F1" data-m="14px 0 0 0" data-p="8px 18px" data-border="none" data-radius="9px" data-display="inline-flex" data-position="static">
+        <button class="page-btn inspectable" data-tag="button.primary" data-bw="142 x 37" data-font="Inter" data-size="13px" data-weight="600" data-weight-name="SemiBold" data-lh="1 (13px)" data-ls="0px" data-color="#FFFFFF" data-bg="#1A1A1A" data-m="14px 0 0 0" data-p="8px 18px" data-border="none" data-radius="9px" data-display="inline-flex" data-position="static">
           <span class="hover-label">&lt;button.primary&gt;</span><span class="dim-badge">142 x 37</span>Explore Scale →
         </button>
       </div>
@@ -516,60 +569,62 @@
         <span class="hover-label">&lt;div.card&gt;</span><span class="dim-badge">340 x 188</span>
         <h3>Color Palette</h3>
         <p>Accessible color combinations designed for clarity and brand recognition across all contexts.</p>
-        <button class="page-btn-outline inspectable" data-tag="button.outline" data-bw="138 x 37" data-font="Inter" data-size="13px" data-weight="600" data-weight-name="SemiBold" data-lh="1 (13px)" data-ls="0px" data-color="#6366F1" data-bg="#FFFFFF" data-m="14px 0 0 0" data-p="8px 18px" data-border="1.5px solid #6366F1" data-radius="9px" data-display="inline-flex" data-position="static">
+        <button class="page-btn-outline inspectable" data-tag="button.outline" data-bw="138 x 37" data-font="Inter" data-size="13px" data-weight="600" data-weight-name="SemiBold" data-lh="1 (13px)" data-ls="0px" data-color="#1A1A1A" data-bg="#FFFFFF" data-m="14px 0 0 0" data-p="8px 18px" data-border="1.5px solid #1A1A1A" data-radius="9px" data-display="inline-flex" data-position="static">
           <span class="hover-label">&lt;button.outline&gt;</span><span class="dim-badge">138 x 37</span>View Palette →
         </button>
       </div>
     </div>
 
-    <!-- ====== FLOATING WIDGET ====== -->
-    <div class="float-widget collapsed" id="widget">
-      <!-- FAB (collapsed state) -->
-      <button class="fab active" id="fab">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M4 7V4h3"/><path d="M20 7V4h-3"/>
-          <path d="M4 17v3h3"/><path d="M20 17v3h-3"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-        <span class="fab-tooltip">Element Inspector</span>
-      </button>
-
-      <!-- Panel (expanded state) -->
-      <div class="panel" id="panel">
-        <div class="panel-head">
-          <div class="panel-head-row">
-            <div class="panel-brand">
-              <div class="panel-logo">
-                <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                  <path d="M4 7V4h3"/><path d="M20 7V4h-3"/>
-                  <path d="M4 17v3h3"/><path d="M20 17v3h-3"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </div>
-              <span class="panel-title">Element Inspector</span>
-            </div>
-            <button class="panel-minimize" id="minimizeBtn" title="Minimize">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
-            </button>
-          </div>
-          <div class="sel-bar" id="selBar">
-            <span class="sel-dot"></span>
-            <span class="sel-tag" id="selTag">&lt;h1&gt;</span>
-            <span class="sel-dim" id="selDim">560 x 98</span>
-          </div>
-        </div>
-        <div class="panel-scroll" id="panelContent"></div>
-        <div class="panel-foot">
-          <button class="foot-btn" onclick="showToast('CSS copied to clipboard')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copy CSS
-          </button>
-          <span class="foot-hint">Click any element</span>
-        </div>
-      </div>
-    </div>
 
   </div>
+
+  <!-- ====== FLOATING WIDGET (outside pageBody, overlays both demo & iframe) ====== -->
+  <div class="float-widget collapsed" id="widget">
+    <!-- FAB (collapsed state) -->
+    <button class="fab active" id="fab">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M4 7V4h3"/><path d="M20 7V4h-3"/>
+        <path d="M4 17v3h3"/><path d="M20 17v3h-3"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      <span class="fab-tooltip">Element Inspector</span>
+    </button>
+
+    <!-- Panel (expanded state) -->
+    <div class="panel" id="panel">
+      <div class="panel-head">
+        <div class="panel-head-row">
+          <div class="panel-brand">
+            <div class="panel-logo">
+              <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path d="M4 7V4h3"/><path d="M20 7V4h-3"/>
+                <path d="M4 17v3h3"/><path d="M20 17v3h-3"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <span class="panel-title">Element Inspector</span>
+          </div>
+          <button class="panel-minimize" id="minimizeBtn" title="Minimize">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="sel-bar" id="selBar">
+          <span class="sel-dot"></span>
+          <span class="sel-tag" id="selTag">&lt;h1&gt;</span>
+          <span class="sel-dim" id="selDim">560 x 98</span>
+        </div>
+      </div>
+      <div class="panel-scroll" id="panelContent"></div>
+      <div class="panel-foot">
+        <button class="foot-btn" onclick="showToast('CSS copied to clipboard')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy CSS
+        </button>
+        <span class="foot-hint">Click any element</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="toast" id="toast">
@@ -585,10 +640,91 @@ const panelContent = document.getElementById('panelContent');
 const selTag = document.getElementById('selTag');
 const selDim = document.getElementById('selDim');
 const pageBody = document.getElementById('pageBody');
+const urlBar = document.getElementById('urlBar');
+const siteFrame = document.getElementById('siteFrame');
 
-let currentSelected = null;
+// URL Navigation
+urlBar.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    let url = urlBar.value.trim();
+    if (!url) return;
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    urlBar.value = url.replace(/^https?:\/\//i, '');
+    pageBody.style.display = 'none';
+    siteFrame.style.display = 'block';
+    siteFrame.src = url;
+  }
+});
+
+function goBackToDemo() {
+  siteFrame.style.display = 'none';
+  siteFrame.src = '';
+  pageBody.style.display = '';
+  urlBar.value = 'acme.design/brand-guidelines';
+}
+
+// ===== Overlay elements =====
+const hoverOverlay = document.createElement('div');
+hoverOverlay.className = 'inspect-hover-overlay';
+hoverOverlay.innerHTML = '<span class="overlay-tag"></span><span class="overlay-dim"></span>';
+document.body.appendChild(hoverOverlay);
+
+const selectOverlay = document.createElement('div');
+selectOverlay.className = 'inspect-select-overlay';
+selectOverlay.innerHTML = '<span class="overlay-tag"></span><span class="overlay-dim"></span>';
+document.body.appendChild(selectOverlay);
+
+let hoveredEl = null;
+let selectedEl = null;
 let isExpanded = false;
 
+// ===== Helpers =====
+function getTagDescriptor(el) {
+  let tag = el.tagName.toLowerCase();
+  if (el.id) tag += '#' + el.id;
+  else if (el.className && typeof el.className === 'string') {
+    const cls = el.className.split(/\s+/)
+      .filter(c => c && !c.startsWith('inspect') && c !== 'hovered' && c !== 'selected')
+      .slice(0, 2).join('.');
+    if (cls) tag += '.' + cls;
+  }
+  return tag;
+}
+
+function positionOverlay(overlay, el) {
+  const rect = el.getBoundingClientRect();
+  overlay.style.top = rect.top + 'px';
+  overlay.style.left = rect.left + 'px';
+  overlay.style.width = rect.width + 'px';
+  overlay.style.height = rect.height + 'px';
+  overlay.style.display = 'block';
+  overlay.querySelector('.overlay-tag').textContent = '<' + getTagDescriptor(el) + '>';
+  overlay.querySelector('.overlay-dim').textContent = Math.round(rect.width) + ' \u00d7 ' + Math.round(rect.height);
+}
+
+function canInspect(el) {
+  if (!el || el === document.body || el === document.documentElement) return false;
+  if (el.closest('.float-widget') || el.closest('.toolbar')) return false;
+  if (el.closest('.inspect-hover-overlay') || el.closest('.inspect-select-overlay')) return false;
+  if (el.id === 'toast' || el.closest('#toast')) return false;
+  if (!pageBody.contains(el)) return false;
+  return true;
+}
+
+function rgbToHex(rgb) {
+  if (!rgb || rgb === 'transparent' || rgb === 'rgba(0, 0, 0, 0)') return 'transparent';
+  const m = rgb.match(/\d+/g);
+  if (!m || m.length < 3) return rgb;
+  return '#' + m.slice(0, 3).map(n => parseInt(n).toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+function weightName(w) {
+  const map = {100:'Thin',200:'ExtraLight',300:'Light',400:'Regular',500:'Medium',600:'SemiBold',700:'Bold',800:'ExtraBold',900:'Black'};
+  return map[w] || '';
+}
+
+// ===== Widget expand / collapse =====
 function expand() {
   isExpanded = true;
   widget.classList.remove('collapsed');
@@ -599,16 +735,13 @@ function collapse() {
   isExpanded = false;
   widget.classList.remove('expanded');
   widget.classList.add('collapsed');
-  if (currentSelected) {
-    currentSelected.classList.remove('selected');
-    currentSelected = null;
-  }
+  selectedEl = null;
+  selectOverlay.style.display = 'none';
 }
 
-// FAB click → expand (if no element selected, show empty)
 fab.addEventListener('click', (e) => {
   e.stopPropagation();
-  if (!currentSelected) {
+  if (!selectedEl) {
     panelContent.innerHTML = `
       <div class="empty-state">
         <div class="empty-ico">
@@ -627,95 +760,125 @@ fab.addEventListener('click', (e) => {
   expand();
 });
 
-// Minimize → collapse back to FAB
 minimizeBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   collapse();
 });
 
-// Click empty area → collapse
-pageBody.addEventListener('click', (e) => {
-  if (e.target.closest('.inspectable') || e.target.closest('.float-widget')) return;
-  collapse();
+// ===== Mouse tracking: hover & select =====
+pageBody.addEventListener('mousemove', (e) => {
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (!el || !canInspect(el)) { hoverOverlay.style.display = 'none'; hoveredEl = null; return; }
+  if (el === hoveredEl) return;
+  if (el === selectedEl) { hoverOverlay.style.display = 'none'; hoveredEl = null; return; }
+  hoveredEl = el;
+  positionOverlay(hoverOverlay, el);
 });
 
-// Build panel
+pageBody.addEventListener('mouseleave', () => {
+  hoverOverlay.style.display = 'none';
+  hoveredEl = null;
+});
+
+pageBody.addEventListener('click', (e) => {
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (!el || !canInspect(el)) { collapse(); return; }
+  e.preventDefault();
+  e.stopPropagation();
+
+  selectedEl = el;
+  hoveredEl = null;
+  hoverOverlay.style.display = 'none';
+  positionOverlay(selectOverlay, el);
+
+  const rect = el.getBoundingClientRect();
+  selTag.textContent = '<' + getTagDescriptor(el) + '>';
+  selDim.textContent = Math.round(rect.width) + ' \u00d7 ' + Math.round(rect.height);
+  buildPanel(el);
+  if (!isExpanded) expand();
+});
+
+// Keep overlays in sync on scroll / resize
+function refreshOverlays() {
+  if (hoveredEl) positionOverlay(hoverOverlay, hoveredEl);
+  if (selectedEl) positionOverlay(selectOverlay, selectedEl);
+}
+window.addEventListener('scroll', refreshOverlays, true);
+window.addEventListener('resize', refreshOverlays);
+
+// ===== Build panel from computed styles =====
 function buildPanel(el) {
-  const d = el.dataset;
-  const hasFont = d.font && d.font !== '';
+  const cs = getComputedStyle(el);
+  const rect = el.getBoundingClientRect();
+  const w = Math.round(rect.width), h = Math.round(rect.height);
+
+  const font = cs.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
+  const fontSize = cs.fontSize;
+  const fontWeight = cs.fontWeight;
+  const lineHeight = cs.lineHeight;
+  const letterSpacing = cs.letterSpacing;
+  const color = rgbToHex(cs.color);
+  const bg = rgbToHex(cs.backgroundColor);
+
   let html = '';
 
-  if (hasFont) {
-    html += `
-    <div class="info-section">
-      <div class="section-head">Typography</div>
-      <div class="prop-row"><span class="prop-key">Font Family</span><span class="prop-val copyable" onclick="copyVal('${d.font}')">${d.font}</span></div>
-      <div class="prop-row"><span class="prop-key">Size</span><span class="prop-val mono copyable" onclick="copyVal('${d.size}')">${d.size}</span></div>
-      <div class="prop-row"><span class="prop-key">Weight</span><span class="prop-val mono copyable" onclick="copyVal('${d.weight}')">${d.weight} ${d.weightName||''}</span></div>
-      <div class="prop-row"><span class="prop-key">Line Height</span><span class="prop-val mono copyable" onclick="copyVal('${d.lh}')">${d.lh}</span></div>
-      <div class="prop-row"><span class="prop-key">Letter Spacing</span><span class="prop-val mono copyable" onclick="copyVal('${d.ls}')">${d.ls}</span></div>
-      <div class="font-preview-box">
-        <div class="font-preview-text" style="font-family:'${d.font}',serif;font-size:${parseInt(d.size)>26?'26px':d.size};font-weight:${d.weight};">Aa Bb Cc 가나다 123</div>
-        <div class="font-preview-meta">${d.font} ${d.weightName} ${d.size}</div>
-      </div>
-    </div>`;
-  }
+  // Typography
+  html += `<div class="info-section">
+    <div class="section-head">Typography</div>
+    <div class="prop-row"><span class="prop-key">Font Family</span><span class="prop-val copyable" onclick="copyVal('${font}')">${font}</span></div>
+    <div class="prop-row"><span class="prop-key">Size</span><span class="prop-val mono copyable" onclick="copyVal('${fontSize}')">${fontSize}</span></div>
+    <div class="prop-row"><span class="prop-key">Weight</span><span class="prop-val mono copyable" onclick="copyVal('${fontWeight}')">${fontWeight} ${weightName(fontWeight)}</span></div>
+    <div class="prop-row"><span class="prop-key">Line Height</span><span class="prop-val mono copyable" onclick="copyVal('${lineHeight}')">${lineHeight}</span></div>
+    <div class="prop-row"><span class="prop-key">Letter Spacing</span><span class="prop-val mono copyable" onclick="copyVal('${letterSpacing}')">${letterSpacing}</span></div>
+    <div class="font-preview-box">
+      <div class="font-preview-text" style="font-family:'${font}',serif;font-size:${parseInt(fontSize)>26?26:parseInt(fontSize)}px;font-weight:${fontWeight};">Aa Bb Cc 가나다 123</div>
+      <div class="font-preview-meta">${font} ${weightName(fontWeight)} ${fontSize}</div>
+    </div>
+  </div>`;
 
+  // Colors
   html += `<div class="info-section"><div class="section-head">Colors</div>`;
-  if (d.color) {
-    html += `<div class="color-row" onclick="copyVal('${d.color}')"><div class="clr-dot" style="background:${d.color};"></div><div class="clr-info"><span class="clr-label">Text Color</span><span class="clr-hex">${d.color}</span></div><svg class="clr-copy" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div>`;
-  }
-  if (d.bg && d.bg !== 'transparent') {
-    html += `<div class="color-row" onclick="copyVal('${d.bg}')"><div class="clr-dot" style="background:${d.bg};"></div><div class="clr-info"><span class="clr-label">Background</span><span class="clr-hex">${d.bg}</span></div><svg class="clr-copy" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div>`;
-  } else if (d.bg === 'transparent') {
+  html += `<div class="color-row" onclick="copyVal('${color}')"><div class="clr-dot" style="background:${color};"></div><div class="clr-info"><span class="clr-label">Text Color</span><span class="clr-hex">${color}</span></div><svg class="clr-copy" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div>`;
+  if (bg !== 'transparent') {
+    html += `<div class="color-row" onclick="copyVal('${bg}')"><div class="clr-dot" style="background:${bg};"></div><div class="clr-info"><span class="clr-label">Background</span><span class="clr-hex">${bg}</span></div><svg class="clr-copy" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div>`;
+  } else {
     html += `<div class="color-row"><div class="clr-dot" style="background:repeating-conic-gradient(#ddd 0% 25%,transparent 0% 50%) 50%/10px 10px;"></div><div class="clr-info"><span class="clr-label">Background</span><span class="clr-hex" style="color:#aaa;">transparent</span></div></div>`;
   }
   html += `</div>`;
 
-  const m=(d.m||'0').split(' '), p=(d.p||'0').split(' ');
-  const mt=m[0]||'0',mr=m[1]||mt,mb=m[2]||mt,ml=m[3]||mr;
-  const pt=p[0]||'0',pr=p[1]||pt,pb=p[2]||pt,pl=p[3]||pr;
-  html += `
-  <div class="info-section"><div class="section-head">Box Model</div>
+  // Box Model
+  const mt = parseInt(cs.marginTop), mr = parseInt(cs.marginRight), mb = parseInt(cs.marginBottom), ml = parseInt(cs.marginLeft);
+  const pt = parseInt(cs.paddingTop), pr = parseInt(cs.paddingRight), pb = parseInt(cs.paddingBottom), pl = parseInt(cs.paddingLeft);
+  html += `<div class="info-section"><div class="section-head">Box Model</div>
     <div class="box-model">
       <div class="box-layer box-margin"><span class="bv t mc">${mt}</span><span class="bv r mc">${mr}</span><span class="bv b mc">${mb}</span><span class="bv l mc">${ml}</span>
         <div class="box-layer box-padding"><span class="bv t pc">${pt}</span><span class="bv r pc">${pr}</span><span class="bv b pc">${pb}</span><span class="bv l pc">${pl}</span>
-          <div class="box-content"><span class="box-sz">${d.bw||'?'}</span></div>
+          <div class="box-content"><span class="box-sz">${w} \u00d7 ${h}</span></div>
         </div>
       </div>
       <div class="box-legend"><span><i class="lg-m"></i>Margin</span><span><i class="lg-p"></i>Padding</span><span><i class="lg-c"></i>Content</span></div>
     </div>
   </div>`;
 
+  // Attributes
+  const border = cs.borderTopWidth + ' ' + cs.borderTopStyle + ' ' + rgbToHex(cs.borderTopColor);
+  const borderRadius = cs.borderRadius;
   html += `<div class="info-section"><div class="section-head">Attributes</div>`;
-  html += `<div class="prop-row"><span class="prop-key">Display</span><span class="prop-val mono">${d.display||'block'}</span></div>`;
-  html += `<div class="prop-row"><span class="prop-key">Position</span><span class="prop-val mono">${d.position||'static'}</span></div>`;
-  if (d.border && d.border !== 'none') html += `<div class="prop-row"><span class="prop-key">Border</span><span class="prop-val mono copyable" onclick="copyVal('${d.border}')">${d.border}</span></div>`;
-  if (d.borderB) html += `<div class="prop-row"><span class="prop-key">Border Bottom</span><span class="prop-val mono copyable" onclick="copyVal('${d.borderB}')">${d.borderB}</span></div>`;
-  if (d.radius && d.radius !== '0') html += `<div class="prop-row"><span class="prop-key">Border Radius</span><span class="prop-val mono copyable" onclick="copyVal('${d.radius}')">${d.radius}</span></div>`;
+  html += `<div class="prop-row"><span class="prop-key">Display</span><span class="prop-val mono">${cs.display}</span></div>`;
+  html += `<div class="prop-row"><span class="prop-key">Position</span><span class="prop-val mono">${cs.position}</span></div>`;
+  if (cs.borderTopStyle !== 'none' && cs.borderTopWidth !== '0px') {
+    html += `<div class="prop-row"><span class="prop-key">Border</span><span class="prop-val mono copyable" onclick="copyVal('${border}')">${border}</span></div>`;
+  }
+  if (borderRadius && borderRadius !== '0px') {
+    html += `<div class="prop-row"><span class="prop-key">Border Radius</span><span class="prop-val mono copyable" onclick="copyVal('${borderRadius}')">${borderRadius}</span></div>`;
+  }
   html += `</div>`;
 
   panelContent.innerHTML = html;
 }
 
-function selectElement(el) {
-  if (currentSelected) currentSelected.classList.remove('selected');
-  currentSelected = el;
-  el.classList.remove('hovered');
-  el.classList.add('selected');
-  selTag.textContent = `<${el.dataset.tag}>`;
-  selDim.textContent = el.dataset.bw || '';
-  buildPanel(el);
-  if (!isExpanded) expand();
-}
-
-document.querySelectorAll('.inspectable').forEach(el => {
-  el.addEventListener('mouseenter', () => { if (el !== currentSelected) el.classList.add('hovered'); });
-  el.addEventListener('mouseleave', () => { el.classList.remove('hovered'); });
-  el.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); selectElement(el); });
-});
-
-function copyVal(val) { showToast(`Copied "${val}"`); }
+// ===== Utilities =====
+function copyVal(val) { showToast('Copied "' + val + '"'); }
 function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg;
