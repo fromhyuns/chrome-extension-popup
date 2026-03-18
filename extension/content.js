@@ -297,13 +297,31 @@
     positionOverlay(hoverOv, el);
   }, true);
 
+  // Find a child element at (x, y) inside a parent
+  function findChildAt(parent, x, y) {
+    for (const child of parent.children) {
+      if (isOwn(child) || child.tagName === 'SCRIPT' || child.tagName === 'STYLE') continue;
+      const r = child.getBoundingClientRect();
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+        return child;
+      }
+    }
+    return null;
+  }
+
   document.addEventListener('click', (e) => {
     if (!active || !inspecting) return;
-    const el = document.elementFromPoint(e.clientX, e.clientY);
+    let el = document.elementFromPoint(e.clientX, e.clientY);
     if (!el || isOwn(el) || el === document.body || el === document.documentElement) return;
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
+
+    // If clicking the same element again, drill into its child at this point
+    if (el === selectedEl || (selectedEl && selectedEl.contains(el) && el === selectedEl)) {
+      const deeper = findChildAt(selectedEl, e.clientX, e.clientY);
+      if (deeper) el = deeper;
+    }
 
     selectedEl = el;
     hoveredEl = null;
@@ -369,6 +387,49 @@
   document.addEventListener('keydown', (e) => {
     if ((e.key === '`' || e.key === '₩') && active && !inspecting) {
       openPanel();
+    }
+  }, true);
+
+  // Arrow keys → DOM tree navigation
+  document.addEventListener('keydown', (e) => {
+    if (!active || !selectedEl) return;
+    let next = null;
+
+    if (e.key === 'ArrowUp') {
+      next = selectedEl.parentElement;
+      if (next === document.body || next === document.documentElement) next = null;
+    } else if (e.key === 'ArrowDown') {
+      for (const child of selectedEl.children) {
+        if (!isOwn(child) && child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
+          next = child; break;
+        }
+      }
+    } else if (e.key === 'ArrowLeft') {
+      let sib = selectedEl.previousElementSibling;
+      while (sib && (isOwn(sib) || sib.tagName === 'SCRIPT' || sib.tagName === 'STYLE')) sib = sib.previousElementSibling;
+      next = sib;
+    } else if (e.key === 'ArrowRight') {
+      let sib = selectedEl.nextElementSibling;
+      while (sib && (isOwn(sib) || sib.tagName === 'SCRIPT' || sib.tagName === 'STYLE')) sib = sib.nextElementSibling;
+      next = sib;
+    }
+
+    if (next && !isOwn(next)) {
+      e.preventDefault();
+      selectedEl = next;
+      positionOverlay(selectOv, next);
+      const r = next.getBoundingClientRect();
+      selTag.textContent = '<' + tagName(next) + '>';
+      selDim.textContent = Math.round(r.width) + ' \u00d7 ' + Math.round(r.height);
+      const elTokens = findElementTokens(next);
+      if (elTokens.length > 0) {
+        selToken.textContent = elTokens[0];
+        selToken.style.display = '';
+      } else {
+        selToken.textContent = '';
+        selToken.style.display = 'none';
+      }
+      buildPanel(next);
     }
   }, true);
 
@@ -1018,10 +1079,17 @@
       </div>
       <div class="ei-panel-scroll"></div>
       <div class="ei-panel-foot">
-        <div class="ei-foot-shortcuts">
-          <span class="ei-shortcut" title="Click to inspect"><kbd>Click</kbd> Inspect</span>
-          <span class="ei-shortcut" title="Pause inspection"><kbd>ESC</kbd> Pause</span>
-          <span class="ei-shortcut" title="Resume inspection"><kbd>₩</kbd> Resume</span>
+        <div class="ei-help-wrap">
+          <button class="ei-help-btn" title="Keyboard shortcuts">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M6 12h.01"/><path d="M18 12h.01"/><path d="M8 16h8"/></svg>
+            <span>Shortcuts</span>
+          </button>
+          <div class="ei-help-popup">
+            <div class="ei-help-row"><kbd>Click</kbd><span>Inspect (repeat to go deeper)</span></div>
+            <div class="ei-help-row"><kbd>↑↓←→</kbd><span>Navigate DOM tree</span></div>
+            <div class="ei-help-row"><kbd>ESC</kbd><span>Pause inspection</span></div>
+            <div class="ei-help-row"><kbd>₩</kbd><span>Resume inspection</span></div>
+          </div>
         </div>
         <div class="ei-viewport">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
@@ -1273,13 +1341,34 @@
       padding: 9px 16px; border-top: 0.5px solid rgba(0,0,0,0.05);
       display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
     }
-    .ei-foot-shortcuts { display: flex; gap: 8px; }
-    .ei-shortcut { font-size: 9px; color: #86868b; font-weight: 500; display: flex; align-items: center; gap: 3px; }
-    .ei-shortcut kbd {
-      font-family: 'Inter',system-ui,sans-serif; font-size: 8.5px; font-weight: 600; color: #1d1d1f;
-      background: rgba(0,0,0,0.05); border: 0.5px solid rgba(0,0,0,0.08);
-      padding: 1.5px 4px; border-radius: 3px; line-height: 1;
+    .ei-help-wrap { position: relative; }
+    .ei-help-btn {
+      height: 22px; border-radius: 4px; padding: 0 7px;
+      background: rgba(0,0,0,0.04); border: 0.5px solid rgba(0,0,0,0.08);
+      color: #86868b; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+      transition: all 0.12s;
     }
+    .ei-help-btn span { font: 500 9.5px/1 'Inter',system-ui,sans-serif; }
+    .ei-help-btn:hover { background: rgba(15,160,155,0.1); color: #0FA09B; }
+    .ei-help-popup {
+      position: absolute; bottom: 32px; left: 0;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+      border-radius: 8px; padding: 8px 10px;
+      display: flex; flex-direction: column; gap: 6px;
+      opacity: 0; pointer-events: none; transform: translateY(4px);
+      transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+      white-space: nowrap;
+    }
+    .ei-help-wrap:hover .ei-help-popup { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .ei-help-row { display: flex; align-items: center; gap: 8px; }
+    .ei-help-row kbd {
+      font-family: 'Inter',system-ui,sans-serif; font-size: 9px; font-weight: 600; color: #fff;
+      background: rgba(255,255,255,0.15); border: 0.5px solid rgba(255,255,255,0.2);
+      padding: 2px 5px; border-radius: 3px; line-height: 1;
+      min-width: 32px; text-align: center;
+    }
+    .ei-help-row span { font-size: 10px; color: rgba(255,255,255,0.7); font-weight: 500; }
     .ei-viewport {
       display: flex; align-items: center; gap: 4px;
       font: 600 10px/1 'Fira Code',monospace; color: #0FA09B;
