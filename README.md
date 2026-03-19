@@ -1,4 +1,4 @@
-# Element Inspector
+# QA Lens
 
 A Chrome extension that inspects CSS properties and design tokens of any element on any website.
 
@@ -12,8 +12,8 @@ A Chrome extension that inspects CSS properties and design tokens of any element
 
 ### Design Token Detection
 - Detects CSS custom properties (`var(--token-name)`) used in styles
-- Supports shorthand property lookup (`margin` -> `margin-top`, `font` -> `font-size`, etc.)
-- Resolves unit conversions (`rem`, `em`, `vh`, `%` -> `px`) for accurate token matching
+- Supports shorthand property lookup (`margin` → `margin-top`, `font` → `font-size`, etc.)
+- Resolves unit conversions (`rem`, `em`, `vh`, `%` → `px`) for accurate token matching
 - Scans `@media`, `@supports`, and other nested CSS rules
 - Checks `data-token`, `data-component`, `data-icon`, `data-testid` attributes
 - Recognizes icon library class names (Font Awesome, Material Icons, etc.)

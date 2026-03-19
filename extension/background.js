@@ -21,7 +21,7 @@ chrome.action.onClicked.addListener(async (tab) => {
       await new Promise(r => setTimeout(r, 100));
       await chrome.tabs.sendMessage(tab.id, { action: 'toggle' });
     } catch (err) {
-      console.warn('Element Inspector: cannot run on this page.', err);
+      console.warn('QA Lens: cannot run on this page.', err);
     }
   }
 });

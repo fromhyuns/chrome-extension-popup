@@ -1044,7 +1044,7 @@
         <path d="M4 17v3h3"/><path d="M20 17v3h-3"/>
         <circle cx="12" cy="12" r="3"/>
       </svg>
-      <span class="ei-fab-tip">Element Inspector</span>
+      <span class="ei-fab-tip">QA Lens</span>
     </button>
 
     <!-- Panel -->
@@ -1059,7 +1059,7 @@
                 <circle cx="12" cy="12" r="3"/>
               </svg>
             </div>
-            <span class="ei-title">Element Inspector</span>
+            <span class="ei-title">QA Lens</span>
           </div>
           <div class="ei-head-btns">
             <button class="ei-minimize" title="Minimize">

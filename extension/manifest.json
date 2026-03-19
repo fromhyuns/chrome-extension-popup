@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Element Inspector",
+  "name": "QA Lens",
   "description": "Inspect CSS properties of any element on any website",
   "version": "1.0",
   "permissions": ["activeTab", "scripting"],
@@ -22,7 +22,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Toggle Element Inspector",
+    "default_title": "Toggle QA Lens",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
